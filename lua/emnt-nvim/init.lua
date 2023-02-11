@@ -27,8 +27,6 @@ vim.opt.shiftwidth = 0
 vim.opt.softtabstop = 0
 -- Replace tabs with spaces
 vim.opt.expandtab = true
--- Check for spelling errors (with treesitter integration)
-vim.opt.spell = true
 -- Use persistent undo files for recovery
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -58,4 +56,19 @@ function P(val)
     print(vim.inspect(val))
 end
 
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
 require("emnt-nvim.plugins")
+
+vim.cmd.colorscheme("solarized8_flat")

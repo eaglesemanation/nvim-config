@@ -1,9 +1,4 @@
--- Avoids failing during bootstrap
-local ok, neotest = pcall(require, "neotest")
-if not ok then
-    return
-end
-
+local neotest = require("neotest")
 local hydra = require("hydra")
 
 -- get neotest namespace (api call creates or returns namespace)

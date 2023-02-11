@@ -1,15 +1,13 @@
 local M = {}
 
--- Avoids failing during bootstrap
-local ok, cmp = pcall(require, "cmp")
-if not ok then
-    return
-end
-
+local cmp = require("cmp")
 local lspconfig = require("lspconfig")
 local luasnip = require("luasnip")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
+
 local null_ls = require("null-ls")
+local formatting = null_ls.builtins.formatting
+local diagnostics = null_ls.builtins.diagnostics
 
 local hydra = require("hydra")
 local cmd = require("hydra.keymap-util").cmd
@@ -54,6 +52,17 @@ local servers = {
     },
 }
 
+-- Linters, formatters, etc.
+local null_ls_sources = {
+    formatting.trim_whitespace,
+    formatting.trim_newlines,
+    formatting.stylua,
+    formatting.terraform_fmt,
+    diagnostics.shellcheck,
+    diagnostics.golangci_lint,
+}
+
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 
@@ -88,15 +97,6 @@ local setup_server = function(server, config)
 
     lspconfig[server].setup(config)
 end
-
-local null_ls_sources = {
-    null_ls.builtins.formatting.trim_whitespace,
-    null_ls.builtins.formatting.trim_newlines,
-    null_ls.builtins.formatting.stylua,
-    null_ls.builtins.formatting.terraform_fmt,
-    null_ls.builtins.diagnostics.shellcheck,
-    null_ls.builtins.diagnostics.golangci_lint,
-}
 
 local function null_ls_source_exists(source)
     return vim.fn.executable(source._opts.command) == 1

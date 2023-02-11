@@ -1,199 +1,147 @@
-local function ensure_packer()
-    local fn = vim.fn
-    local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-    if fn.empty(fn.glob(install_path)) > 0 then
-        fn.system({ "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path })
-        vim.cmd([[packadd packer.nvim]])
-        return true
+local function emntMod(name)
+    return function()
+        require("emnt-nvim." .. name)
     end
-    return false
 end
 
-local packer_bootstrap = ensure_packer()
-
-local function packer_setup(use)
-    -- Self-manage plugin manager
-    use("wbthomason/packer.nvim")
-
+local plugins = {
     ----
     -- Movements
     ----
-    use("tpope/vim-surround")
-    use("tpope/vim-repeat")
+    "tpope/vim-surround",
+    "tpope/vim-repeat",
     -- Additional targets that feel like vanilla vim
-    use("wellle/targets.vim")
-    use({
+    "wellle/targets.vim",
+    {
         -- Move to any visible position in 4 keystrokes max
         "ggandor/leap.nvim",
         config = function()
             require("leap").add_default_mappings()
         end,
-    })
+    },
     -- Add custom modes
-    use({ "anuvyklack/hydra.nvim", as = "hydra" })
+    "anuvyklack/hydra.nvim",
     -- Draw diagrams
-    use({
+    {
         "jbyuki/venn.nvim",
-        config = function()
-            require("emnt-nvim.venn")
-        end,
-    })
+        config = emntMod("venn"),
+    },
 
     -- Fuzzy search
-    use({
+    {
         "nvim-telescope/telescope.nvim",
-        as = "telescope",
-        requires = {
+        name = "telescope",
+        dependencies = {
             { "nvim-lua/plenary.nvim" },
-            { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
             { "nvim-telescope/telescope-ui-select.nvim" },
         },
-        config = function()
-            require("emnt-nvim.telescope")
-        end,
-    })
+        config = emntMod("telescope"),
+    },
 
-    -- Language specific configs such as errorformat
-    use("sheerun/vim-polyglot")
-
+    { "lifepillar/vim-solarized8", lazy = true, },
     -- Changes background color of RGB values
-    use({
+    {
         "norcalli/nvim-colorizer.lua",
         ft = { "css", "html" },
-        config = function()
-            require("colorizer").setup()
-        end,
-    })
+        config = true,
+    },
     -- Automatically generates LSP colors for legacy colorschemes
-    use("folke/lsp-colors.nvim")
-    use({
-        "lifepillar/vim-solarized8",
-        config = function()
-            vim.cmd.colorscheme("solarized8_flat")
-        end,
-    })
-    use("kyazdani42/nvim-web-devicons")
-    use({
+    "folke/lsp-colors.nvim",
+    {
         "nvim-lualine/lualine.nvim",
-        requires = {
-            { "kyazdani42/nvim-web-devicons", opt = true },
+        dependencies = {
+            { "kyazdani42/nvim-web-devicons" },
         },
-        config = function()
-            require("lualine").setup({})
-        end,
-    })
+        opts = {},
+    },
     -- Keep cursor position when window below is opened
-    use({
+    {
         "luukvbaal/stabilize.nvim",
-        config = function()
-            require("stabilize").setup()
-        end,
-    })
+        config = true,
+    },
 
     ----
     -- Git integration
     ----
-    use("tpope/vim-fugitive")
-    use("tpope/vim-git")
-    use({
+    "tpope/vim-fugitive",
+    "tpope/vim-git",
+    {
         "lewis6991/gitsigns.nvim",
-        config = function()
-            require("gitsigns").setup()
-        end,
-    })
-    use({ "sindrets/diffview.nvim", requires = "nvim-lua/plenary.nvim" })
+        config = true,
+    },
+    {
+        "sindrets/diffview.nvim",
+        dependencies = {"nvim-lua/plenary.nvim"}
+    },
 
     -- Simplified language servers config
-    use({
+    {
         "neovim/nvim-lspconfig",
-        as = "lspconfig",
-        requires = {
+        dependencies = {
             -- Progress bar for language server indexing
             {
                 "j-hui/fidget.nvim",
-                config = function()
-                    require("fidget").setup({
-                        window = { blend = 0 },
-                    })
-                end,
+                opts = {
+                    window = { blend = 0 },
+                },
             },
             -- Configures lua language server for neovim specific api
             {
                 "folke/neodev.nvim",
-                config = function()
-                    require("neodev").setup({
-                        -- Enable nvim LSP overrides for nix flake project
-                        override = function(_, library)
-                            if require("emnt-nvim.utils").find_upwards("nix-config") ~= nil then
-                                library.enabled = true
-                                library.plugins = true
-                            end
-                        end,
-                    })
-                end,
+                config = true,
             },
             -- Autocompletion integration
             { "hrsh7th/cmp-nvim-lsp" },
         },
-    })
+    },
     -- Integration layer between linters/formatters and LSP
-    use("jose-elias-alvarez/null-ls.nvim")
+    "jose-elias-alvarez/null-ls.nvim",
 
     -- Task executor
-    use({
+    {
         "stevearc/overseer.nvim",
-        config = function()
-            require("overseer").setup()
-        end,
-    })
+        config = true,
+    },
     -- Debugger
-    use({
+    {
         "mfussenegger/nvim-dap",
-        as = "dap",
-        requires = {
+        dependencies = {
             { "rcarriga/nvim-dap-ui" },
         },
-        after = { "hydra" },
-        config = function()
-            require("emnt-nvim.dap")
-        end,
-    })
+        config = emntMod("dap"),
+    },
 
     -- Java specific LSP and DAP configuration with additional features
-    use({
+    {
         "mfussenegger/nvim-jdtls",
         ft = { "java" },
-        after = { "lspconfig", "dap" },
         config = function()
             require("emnt-nvim.jdtls").setup()
         end,
-    })
+    },
 
     -- Testing frameworks integration
-    use({
+    {
         "nvim-neotest/neotest",
-        requires = {
+        dependencies = {
             { "nvim-lua/plenary.nvim" },
             { "nvim-neotest/neotest-go" },
             { "rouge8/neotest-rust" },
         },
-        after = { "hydra", "treesitter" },
-        config = function()
-            require("emnt-nvim.neotest")
-        end,
-    })
+        config = emntMod("neotest"),
+    },
 
     -- Improved syntax support
-    use({
+    {
         "nvim-treesitter/nvim-treesitter",
-        as = "treesitter",
-        requires = {
+        dependencies = {
             -- Keep current context at the top of buffer (for example function name)
-            --{ "nvim-treesitter/nvim-treesitter-context" },
+            { "nvim-treesitter/nvim-treesitter-context" },
             -- Interactive playground for treesitter queries
             { "nvim-treesitter/playground" },
         },
-        run = function()
+        build = function()
             require("nvim-treesitter.install").update({ with_sync = true })
         end,
         config = function()
@@ -203,52 +151,43 @@ local function packer_setup(use)
                 highlight = { enable = true },
                 indent = { enable = true },
             })
-            --require("treesitter-context").setup()
+            require("treesitter-context").setup()
         end,
-    })
-    use({ "towolf/vim-helm", ft = { "helm" } })
+    },
+    { "towolf/vim-helm", ft = { "helm" } },
 
     -- Snippets
-    use({
+    {
         "L3MON4D3/LuaSnip",
-        as = "luasnip",
-        requires = {
+        dependencies = {
             -- Autocompletion
             { "saadparwaiz1/cmp_luasnip" },
         },
-    })
+    },
     -- Autocompletion
-    use({
+    {
         "hrsh7th/nvim-cmp",
         requires = {
             { "hrsh7th/cmp-path" },
             { "hrsh7th/cmp-omni" },
         },
-        after = {
-            "lspconfig",
-            "luasnip",
-            "telescope",
-            "hydra",
-        },
         config = function()
             require("emnt-nvim.lsp").setup()
         end,
-    })
+    },
 
     -- Diagnostics list
-    use({
+    {
         "folke/trouble.nvim",
-        requires = { { "kyazdani42/nvim-web-devicons", opt = true } },
-        config = function()
-            require("trouble").setup({})
-        end,
-    })
+        dependencies = { "kyazdani42/nvim-web-devicons" },
+        opts = {},
+    },
 
     -- Improved NetRW
-    use("tpope/vim-vinegar")
+    "tpope/vim-vinegar",
 
     -- LaTeX integration
-    use({
+    {
         "lervag/vimtex",
         ft = { "tex" },
         config = function()
@@ -268,22 +207,7 @@ local function packer_setup(use)
                 end,
             })
         end,
-    })
-
-    use("dstein64/vim-startuptime")
-
-    -- Setup on first boot
-    if packer_bootstrap then
-        require("packer").sync()
-    end
-end
-
-require("packer").startup({
-    packer_setup,
-    config = {
-        profile = {
-            enable = true,
-            threshold = 1,
-        },
     },
-})
+}
+
+require("lazy").setup(plugins)

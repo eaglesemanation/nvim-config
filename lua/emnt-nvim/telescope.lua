@@ -1,15 +1,9 @@
--- Avoids failing during bootstrap
-local ok, telescope = pcall(require, "telescope")
-if not ok then
-    return
-end
-
+local telescope = require("telescope")
 local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
 local themes = require("telescope.themes")
 
 local hydra = require("hydra")
-local cmd = require("hydra.keymap-util").cmd
 
 telescope.setup({
     defaults = {
