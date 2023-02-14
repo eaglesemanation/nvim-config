@@ -1,8 +1,6 @@
 local M = {}
 
-local cmp = require("cmp")
 local lspconfig = require("lspconfig")
-local luasnip = require("luasnip")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
 local null_ls = require("null-ls")
@@ -41,7 +39,7 @@ local servers = {
     -- Configured through nvim-jdtls
     jdtls = false,
 
-    sumneko_lua = {
+    lua_ls = {
         settings = {
             Lua = {
                 completion = { callSnippet = "Replace" },
@@ -61,7 +59,6 @@ local null_ls_sources = {
     diagnostics.shellcheck,
     diagnostics.golangci_lint,
 }
-
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
@@ -132,56 +129,6 @@ local function setup_diagnostics()
     end
 end
 
--- Autocomplete Config
-local cmp_conf = {
-    snippet = {
-        expand = function(args)
-            luasnip.lsp_expand(args.body)
-        end,
-    },
-    window = {
-        completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
-    },
-    sources = {
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
-    },
-    mapping = cmp.mapping.preset.insert({
-        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
-        ["<C-e>"] = cmp.mapping.close(),
-        ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-        }),
-        -- use Tab and shift-Tab to navigate autocomplete menu
-        ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-            else
-                fallback()
-            end
-        end, { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
-            else
-                fallback()
-            end
-        end, { "i", "s" }),
-    }),
-}
-
-local function setup_cmp()
-    vim.o.completeopt = "menuone,noselect"
-    cmp.setup(cmp_conf)
-end
-
 local hydra_conf = {
     name = "LSP",
     mode = "n",
@@ -223,7 +170,6 @@ end
 
 M.setup = function()
     setup_servers()
-    setup_cmp()
     setup_diagnostics()
     hydra(hydra_conf)
 end

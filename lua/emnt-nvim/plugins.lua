@@ -39,7 +39,7 @@ local plugins = {
         config = emntMod("telescope"),
     },
 
-    { "lifepillar/vim-solarized8", lazy = true, },
+    { "lifepillar/vim-solarized8", lazy = true },
     -- Changes background color of RGB values
     {
         "norcalli/nvim-colorizer.lua",
@@ -72,7 +72,7 @@ local plugins = {
     },
     {
         "sindrets/diffview.nvim",
-        dependencies = {"nvim-lua/plenary.nvim"}
+        dependencies = { "nvim-lua/plenary.nvim" },
     },
 
     -- Simplified language servers config
@@ -94,6 +94,9 @@ local plugins = {
             -- Autocompletion integration
             { "hrsh7th/cmp-nvim-lsp" },
         },
+        config = function()
+          require("emnt-nvim.lsp").setup()
+        end,
     },
     -- Integration layer between linters/formatters and LSP
     "jose-elias-alvarez/null-ls.nvim",
@@ -167,13 +170,12 @@ local plugins = {
     -- Autocompletion
     {
         "hrsh7th/nvim-cmp",
-        requires = {
+        dependencies = {
             { "hrsh7th/cmp-path" },
             { "hrsh7th/cmp-omni" },
+            { "onsails/lspkind.nvim" },
         },
-        config = function()
-            require("emnt-nvim.lsp").setup()
-        end,
+        config = emntMod("completion"),
     },
 
     -- Diagnostics list
