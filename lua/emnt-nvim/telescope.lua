@@ -2,8 +2,13 @@ local telescope = require("telescope")
 local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
 local themes = require("telescope.themes")
+local extensions = telescope.extensions
+
+local todo = require("todo-comments")
 
 local hydra = require("hydra")
+
+todo.setup({})
 
 telescope.setup({
     defaults = {
@@ -28,14 +33,20 @@ telescope.setup({
         ["ui-select"] = {
             themes.get_dropdown({}),
         },
+        ["file_browser"] = {
+            hijack_netrw = true,
+        }
     },
 })
 
 telescope.load_extension("fzf")
 telescope.load_extension("ui-select")
+telescope.load_extension("file_browser")
+telescope.load_extension("project")
+telescope.load_extension("todo-comments")
 
 hydra({
-    name = "Fuzzy finder",
+    name = "Find",
     mode = "n",
     body = "<leader>f",
     config = {
@@ -44,21 +55,23 @@ hydra({
     },
     heads = {
         -- File pickers
-        {
-            "f",
-            function()
-                builtin.find_files({ hidden = true })
-            end,
-            { desc = "project [f]iles" },
-        },
-        {
-            "g",
-            function()
-                builtin.live_grep({ additional_args = { "--hidden" } })
-            end,
-            { desc = "[g]rep" },
-        },
-        { "b", builtin.buffers, { desc = "[b]uffers" } },
+        { "f", function()
+            builtin.find_files({ hidden = true })
+        end, { desc = "project [f]iles" }, },
+        { "g", function()
+            builtin.live_grep({ additional_args = { "--hidden" } })
+        end, { desc = "[g]rep" }, },
+        { "b", function()
+            extensions.file_browser.file_browser({ cwd = vim.fn.expand("%:p:h") })
+        end, { desc = "[b]rowser" } },
+        { "B", builtin.buffers,    { desc = "[B]uffers" } },
         { "s", builtin.treesitter, { desc = "[s]ymbols" } },
+        { "p", function()
+            extensions.project.project({ display_type = "full" })
+        end, { desc = "[p]rojects" } },
+        { "d", builtin.diagnostics, {desc = "[d]iagnostics"} },
+        { "t", function ()
+            extensions["todo-comments"].todo()
+        end, {desc = "[t]odo"}}
     },
 })

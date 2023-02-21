@@ -33,8 +33,11 @@ local plugins = {
         name = "telescope",
         dependencies = {
             { "nvim-lua/plenary.nvim" },
-            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+            { "nvim-telescope/telescope-fzf-native.nvim",  build = "make" },
             { "nvim-telescope/telescope-ui-select.nvim" },
+            { "nvim-telescope/telescope-file-browser.nvim" },
+            { "nvim-telescope/telescope-project.nvim" },
+            { "folke/todo-comments.nvim" }
         },
         config = emntMod("telescope"),
     },
@@ -95,7 +98,7 @@ local plugins = {
             { "hrsh7th/cmp-nvim-lsp" },
         },
         config = function()
-          require("emnt-nvim.lsp").setup()
+            require("emnt-nvim.lsp").setup()
         end,
     },
     -- Integration layer between linters/formatters and LSP
@@ -157,7 +160,10 @@ local plugins = {
             require("treesitter-context").setup()
         end,
     },
-    { "towolf/vim-helm", ft = { "helm" } },
+    {
+        "towolf/vim-helm",
+        ft = { "helm" }
+    },
 
     -- Snippets
     {
@@ -177,16 +183,6 @@ local plugins = {
         },
         config = emntMod("completion"),
     },
-
-    -- Diagnostics list
-    {
-        "folke/trouble.nvim",
-        dependencies = { "kyazdani42/nvim-web-devicons" },
-        opts = {},
-    },
-
-    -- Improved NetRW
-    "tpope/vim-vinegar",
 
     -- LaTeX integration
     {
