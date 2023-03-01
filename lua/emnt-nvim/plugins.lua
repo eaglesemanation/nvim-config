@@ -96,6 +96,8 @@ local plugins = {
             },
             -- Autocompletion integration
             { "hrsh7th/cmp-nvim-lsp" },
+            -- JSON and YAML schemas for autocompletion
+            { "b0o/schemastore.nvim" },
         },
         config = function()
             require("emnt-nvim.lsp").setup()

@@ -10,9 +10,20 @@ local diagnostics = null_ls.builtins.diagnostics
 local hydra = require("hydra")
 local cmd = require("hydra.keymap-util").cmd
 
+local json_schemas = require('schemastore').json.schemas({})
+local yaml_schemas = {}
+vim.tbl_map(function(schema)
+    yaml_schemas[schema.url] = schema.fileMatch
+end, json_schemas)
+
 -- LSP Config
 local servers = {
     yamlls = {
+        settings = {
+            yaml = {
+                schemas = yaml_schemas,
+            },
+        },
         on_attach = function(_, bufnr)
             if vim.bo[bufnr].buftype ~= "" or vim.bo[bufnr].filetype == "helm" then
                 vim.diagnostic.disable()
@@ -20,7 +31,6 @@ local servers = {
         end,
     },
     terraformls = true,
-
     clangd = {
         cmd = {
             "clangd",
@@ -30,7 +40,6 @@ local servers = {
         },
     },
     cmake = true,
-
     rust_analyzer = true,
     gopls = true,
     pylsp = true,
@@ -38,7 +47,6 @@ local servers = {
     rnix = true,
     -- Configured through nvim-jdtls
     jdtls = false,
-
     lua_ls = {
         settings = {
             Lua = {
@@ -56,6 +64,7 @@ local null_ls_sources = {
     formatting.trim_newlines,
     formatting.stylua,
     formatting.terraform_fmt,
+    formatting.yamlfmt,
     diagnostics.shellcheck,
     diagnostics.golangci_lint,
 }
@@ -86,11 +95,11 @@ local setup_server = function(server, config)
     end
 
     config = vim.tbl_deep_extend("force", {
-        capabilities = capabilities,
-        flags = {
-            debounce_text_changes = 50,
-        },
-    }, config)
+            capabilities = capabilities,
+            flags = {
+                debounce_text_changes = 50,
+            },
+        }, config)
 
     lspconfig[server].setup(config)
 end
@@ -138,12 +147,12 @@ local hydra_conf = {
         color = "blue",
     },
     heads = {
-        { "f", vim.lsp.buf.format, { desc = "[f]ormat" } },
+        { "f", vim.lsp.buf.format,               { desc = "[f]ormat" } },
         { "d", cmd("Telescope lsp_definitions"), { desc = "[d]efinitions" } },
-        { "D", cmd("Telescope lsp_references"), { desc = "references" } },
-        { "h", vim.lsp.buf.hover, { desc = "[h]over popup" } },
-        { "r", vim.lsp.buf.rename, { desc = "[r]ename" } },
-        { "a", vim.lsp.buf.code_action, { desc = "code [a]ction" } },
+        { "D", cmd("Telescope lsp_references"),  { desc = "references" } },
+        { "h", vim.lsp.buf.hover,                { desc = "[h]over popup" } },
+        { "r", vim.lsp.buf.rename,               { desc = "[r]ename" } },
+        { "a", vim.lsp.buf.code_action,          { desc = "code [a]ction" } },
     },
 }
 

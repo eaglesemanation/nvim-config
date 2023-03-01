@@ -30,6 +30,7 @@
   "overseer.nvim": { "branch": "master", "commit": "65663aedb76779ee6daa6f0a89806ac2474c2fba" },
   "playground": { "branch": "master", "commit": "4044b53c4d4fcd7a78eae20b8627f78ce7dc6f56" },
   "plenary.nvim": { "branch": "master", "commit": "253d34830709d690f013daf2853a9d21ad7accab" },
+  "schemastore.nvim": { "branch": "main", "commit": "6f2ffb8420422db9a6c43dbce7227f0fdb9fcf75" },
   "stabilize.nvim": { "branch": "master", "commit": "34069870a8e72632c5447188e638e1c6bfebc353" },
   "targets.vim": { "branch": "master", "commit": "8d6ff2984cdfaebe5b7a6eee8f226a6dd1226f2d" },
   "telescope": { "branch": "master", "commit": "a486ac3e8fb2198f3636da1927ed57a28836fbd8" },
