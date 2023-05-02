@@ -10,18 +10,19 @@ local diagnostics = null_ls.builtins.diagnostics
 local hydra = require("hydra")
 local cmd = require("hydra.keymap-util").cmd
 
-local json_schemas = require('schemastore').json.schemas({})
-local yaml_schemas = {}
-vim.tbl_map(function(schema)
-    yaml_schemas[schema.url] = schema.fileMatch
-end, json_schemas)
+local schemastore = require('schemastore')
 
 -- LSP Config
 local servers = {
     yamlls = {
         settings = {
             yaml = {
-                schemas = yaml_schemas,
+                schemas = vim.list_extend(
+                    {
+                        kubernetes = {"*.k8s.yaml"},
+                    },
+                    schemastore.yaml.schemas()
+                )
             },
         },
         on_attach = function(_, bufnr)
@@ -44,7 +45,7 @@ local servers = {
     gopls = true,
     pylsp = true,
     denols = true,
-    rnix = true,
+    nil_ls = true,
     -- Configured through nvim-jdtls
     jdtls = false,
     lua_ls = {

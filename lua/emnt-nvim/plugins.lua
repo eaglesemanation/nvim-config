@@ -156,7 +156,10 @@ local plugins = {
             require("nvim-treesitter.configs").setup({
                 ensure_installed = "all",
                 auto_install = true,
-                highlight = { enable = true },
+                highlight = {
+                    enable = true,
+                    disable = { "latex" },
+                },
                 indent = { enable = true },
             })
             require("treesitter-context").setup()

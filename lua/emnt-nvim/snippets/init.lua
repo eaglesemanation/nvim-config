@@ -18,7 +18,7 @@ vim.keymap.set({ "i", "s" }, "<C-l>", function()
     end
 end, { silent = true })
 
-local submodules = {"go"}
+local submodules = {"all", "go", "yaml"}
 for _, submodule in pairs(submodules) do
     require("emnt-nvim.snippets." .. submodule)
 end
