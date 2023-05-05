@@ -20,7 +20,9 @@ neotest.setup({
                 test_table = true,
             },
         }),
-        require("neotest-rust"),
+        require("neotest-rust")({
+            dap_adapter = "codelldb"
+        }),
     },
 })
 
@@ -33,7 +35,7 @@ hydra({
         color = "blue",
     },
     heads = {
-        { "t", neotest.run.run, { desc = "[t]est" } },
+        { "t", neotest.run.run,  { desc = "[t]est" } },
         {
             "d",
             function()

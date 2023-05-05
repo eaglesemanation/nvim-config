@@ -2,16 +2,6 @@ local M = {}
 
 local utils = require("emnt-nvim.utils")
 
-local function extensions_dir_path()
-    for _, ext_path in pairs({ "~/.nix-profile/share/vscode/extensions", "~/.vscode/extensions" }) do
-        local abs_ext_path = vim.fs.normalize(ext_path)
-        if vim.fn.isdirectory(abs_ext_path) then
-            return abs_ext_path
-        end
-    end
-    return nil
-end
-
 local function extension_path(ext_root, ext_name)
     local ext_glob = ext_root
         .. "/vscjava.vscode-java-"
@@ -28,7 +18,7 @@ local function extension_path(ext_root, ext_name)
 end
 
 local function extensions_list()
-    local ext_root = extensions_dir_path()
+    local ext_root = utils.vscode_extensions_path()
     if ext_root == nil then
         return {}
     end
@@ -107,7 +97,7 @@ M.check_health = function()
     else
         vim.health.report_error(server .. " not installed")
     end
-    local ext_root = extensions_dir_path()
+    local ext_root = utils.vscode_extensions_path()
     if ext_root == nil then
         vim.health.report_error("could not find vscode extensions dir")
     else

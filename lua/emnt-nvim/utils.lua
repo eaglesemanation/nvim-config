@@ -37,4 +37,14 @@ M.find_upwards = function(match, opts)
     return nil
 end
 
+M.vscode_extensions_path = function()
+    for _, ext_path in pairs({ "~/.nix-profile/share/vscode/extensions", "~/.vscode/extensions" }) do
+        local abs_ext_path = vim.fs.normalize(ext_path)
+        if vim.fn.isdirectory(abs_ext_path) then
+            return abs_ext_path
+        end
+    end
+    return nil
+end
+
 return M

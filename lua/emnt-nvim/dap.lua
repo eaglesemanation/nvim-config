@@ -4,15 +4,23 @@ local hydra = require("hydra")
 
 local utils = require("emnt-nvim.utils")
 
+local extensions_path = utils.vscode_extensions_path()
+
 -- Use default config for now
 dapui.setup()
 
-if vim.fn.executable("lldb-vscode") == 1 then
-    dap.adapters.lldb = {
-        type = "executable",
-        command = vim.fn.exepath("lldb-vscode"),
-        name = "lldb",
-    }
+if extensions_path ~= nil then
+    local codelldb_path = extensions_path .. "/vadimcn.vscode-lldb/adapter/codelldb"
+    if vim.fn.filereadable(codelldb_path) then
+        dap.adapters.codelldb = {
+            type = "server",
+            port = "${port}",
+            executable = {
+                command = codelldb_path,
+                args = { "--port", "${port}" },
+            }
+        }
+    end
 end
 if vim.fn.executable("dlv") == 1 then
     dap.adapters.delve = {
@@ -57,11 +65,11 @@ hydra({
         invoke_on_body = true,
     },
     heads = {
-        { "c", dap.continue, { exit = true, desc = "run / [c]ontinue" } },
-        { "b", dap.toggle_breakpoint, { desc = "[b]reakpoint" } },
+        { "c", dap.continue,               { exit = true, desc = "run / [c]ontinue" } },
+        { "b", dap.toggle_breakpoint,      { desc = "[b]reakpoint" } },
         { "B", set_conditional_breakpoint, { desc = "conditional [B]reakpoint" } },
-        { "s", dap.step_into, { desc = "[s]tep into" } },
-        { "n", dap.step_over, { desc = "[n]ext" } },
-        { "u", dapui.toggle, { exit = true, desc = "toddle [u]i" } },
+        { "s", dap.step_into,              { desc = "[s]tep into" } },
+        { "n", dap.step_over,              { desc = "[n]ext" } },
+        { "u", dapui.toggle,               { exit = true, desc = "toddle [u]i" } },
     },
 })
