@@ -34,6 +34,9 @@ vim.opt.undofile = true
 -- Remove search highlights, but keep highlight while writing regex
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
+-- Replace window title with titlestring
+vim.opt.title = true
+vim.o.titlestring = "%<%{luaeval('require(\"emnt-nvim.utils\")').project_root_path()}%f"
 
 -- Move between windows
 vim.keymap.set("n", "<leader>h", ":wincmd h<cr>")

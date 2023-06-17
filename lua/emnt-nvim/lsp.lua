@@ -19,7 +19,7 @@ local servers = {
             yaml = {
                 schemas = vim.list_extend(
                     {
-                        kubernetes = {"*.k8s.yaml"},
+                        kubernetes = { "*.k8s.yaml" },
                     },
                     schemastore.yaml.schemas()
                 )
@@ -30,6 +30,9 @@ local servers = {
                 vim.diagnostic.disable()
             end
         end,
+    },
+    jsonls = {
+        filetypes = { "json", "jsonc", "json5" }
     },
     terraformls = true,
     clangd = {
@@ -96,11 +99,11 @@ local setup_server = function(server, config)
     end
 
     config = vim.tbl_deep_extend("force", {
-            capabilities = capabilities,
-            flags = {
-                debounce_text_changes = 50,
-            },
-        }, config)
+        capabilities = capabilities,
+        flags = {
+            debounce_text_changes = 50,
+        },
+    }, config)
 
     lspconfig[server].setup(config)
 end

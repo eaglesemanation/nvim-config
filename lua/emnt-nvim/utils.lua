@@ -47,4 +47,15 @@ M.vscode_extensions_path = function()
     return nil
 end
 
+M.project_root_path = function()
+    local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
+    git_root = git_root:gsub("\n$", "")
+    if git_root == "" then
+        return ""
+    end
+    -- Convert from full path to dir name
+    git_root = vim.fn.fnamemodify(git_root, ":t")
+    return "[git: " .. git_root .. "] "
+end
+
 return M
