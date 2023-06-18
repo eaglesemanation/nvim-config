@@ -85,6 +85,8 @@ local plugins = {
             -- Progress bar for language server indexing
             {
                 "j-hui/fidget.nvim",
+                -- TODO: Remove when rewrite is done
+                branch = "legacy",
                 opts = {
                     window = { blend = 0 },
                 },
