@@ -9,6 +9,16 @@ local extensions_path = utils.vscode_extensions_path()
 -- Use default config for now
 dapui.setup()
 
+vim.api.nvim_set_hl(0, 'DapBreakpoint', { link = 'WarningMsg', default = true })
+vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { link = 'ErrorMsg', default = true })
+vim.api.nvim_set_hl(0, 'DapStopped', { link = 'Insert', default = true })
+
+vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DapBreakpoint' })
+vim.fn.sign_define('DapBreakpointCondition', { text = 'ﳁ', texthl = 'DapBreakpoint' })
+vim.fn.sign_define('DapLogPoint', { text = '', texthl = 'DapBreakpoint' })
+vim.fn.sign_define('DapBreakpointRejected', { text = '', texthl = 'DapBreakpointRejected' })
+vim.fn.sign_define('DapStopped', { text = '', texthl = 'DapStopped' })
+
 if extensions_path ~= nil then
     local codelldb_path = extensions_path .. "/vadimcn.vscode-lldb/adapter/codelldb"
     if vim.fn.filereadable(codelldb_path) then
