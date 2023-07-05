@@ -44,7 +44,15 @@ local servers = {
         },
     },
     cmake = true,
-    rust_analyzer = true,
+    rust_analyzer = {
+        settings = {
+            ["rust-analyzer"] = {
+                checkOnSave = {
+                    command = "clippy",
+                },
+            },
+        },
+    },
     gopls = true,
     pylsp = true,
     denols = true,
@@ -151,12 +159,14 @@ local hydra_conf = {
         color = "blue",
     },
     heads = {
-        { "f", vim.lsp.buf.format,               { desc = "[f]ormat" } },
-        { "d", cmd("Telescope lsp_definitions"), { desc = "[d]efinitions" } },
-        { "D", cmd("Telescope lsp_references"),  { desc = "references" } },
-        { "h", vim.lsp.buf.hover,                { desc = "[h]over popup" } },
-        { "r", vim.lsp.buf.rename,               { desc = "[r]ename" } },
-        { "a", vim.lsp.buf.code_action,          { desc = "code [a]ction" } },
+        { "f", vim.lsp.buf.format,                    { desc = "[f]ormat" } },
+        { "d", cmd("Telescope lsp_definitions"),      { desc = "[d]efinitions" } },
+        { "D", cmd("Telescope lsp_references"),       { desc = "references" } },
+        { "t", cmd("Telescope lsp_type_definitions"), { desc = "[t]ype definitions" } },
+        { "e", vim.diagnostic.open_float,             { desc = "[e]rros (diagnostic)" } },
+        { "h", vim.lsp.buf.hover,                     { desc = "[h]over popup" } },
+        { "r", vim.lsp.buf.rename,                    { desc = "[r]ename" } },
+        { "a", vim.lsp.buf.code_action,               { desc = "code [a]ction" } },
     },
 }
 
@@ -182,6 +192,8 @@ M.check_health = function()
 end
 
 M.setup = function()
+    -- Auto format on save
+    vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
     setup_servers()
     setup_diagnostics()
     hydra(hydra_conf)
