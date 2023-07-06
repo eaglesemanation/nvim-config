@@ -33,7 +33,7 @@ if extensions_path ~= nil then
     end
 end
 if vim.fn.executable("dlv") == 1 then
-    dap.adapters.delve = {
+    dap.adapters.go = {
         type = "server",
         port = "${port}",
         executable = {
