@@ -77,8 +77,10 @@ local null_ls_sources = {
     formatting.stylua,
     formatting.terraform_fmt,
     formatting.yamlfmt,
+    formatting.prettierd,
     diagnostics.shellcheck,
     diagnostics.golangci_lint,
+    diagnostics.eslint_d,
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
