@@ -55,7 +55,7 @@ local servers = {
     },
     gopls = true,
     pylsp = true,
-    denols = true,
+    tsserver = true,
     nil_ls = true,
     -- Configured through nvim-jdtls
     jdtls = false,
