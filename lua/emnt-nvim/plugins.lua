@@ -129,16 +129,12 @@ local plugins = {
     -- Integration layer between linters/formatters and LSP
     "jose-elias-alvarez/null-ls.nvim",
 
-    -- Task executor
-    {
-        "stevearc/overseer.nvim",
-        config = true,
-    },
     -- Debugger
     {
         "mfussenegger/nvim-dap",
         dependencies = {
             { "rcarriga/nvim-dap-ui" },
+            { "stevearc/overseer.nvim" }
         },
         config = emntMod("dap"),
     },

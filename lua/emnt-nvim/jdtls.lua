@@ -45,11 +45,13 @@ local function jdtls_setup()
         cache_path = vim.env.HOME .. "/.cache"
     end
 
-    local project_root = vim.fs.dirname(utils.find_upwards({ ".gradlew", ".git", "mvnw" }))
-    if project_root == nil then
+    local root_markers = vim.fs.find({ ".gradlew", ".git", "mvnw" },
+        { upward = true, type = "directory", path = vim.fn.getcwd(), limit = math.huge })
+    if #root_markers == 0 then
         print("could not find project root, set up one of those: gradle, maven, git")
         return
     end
+    local project_root = vim.fs.dirname(root_markers[1])
     local project_name = vim.fn.fnamemodify(project_root, ":p:h:t")
 
     local config = {

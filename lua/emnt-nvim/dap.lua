@@ -1,6 +1,8 @@
 local dap = require("dap")
+local dap_vscode = require("dap.ext.vscode")
 local dapui = require("dapui")
 local hydra = require("hydra")
+local overseer = require("overseer")
 
 local utils = require("emnt-nvim.utils")
 
@@ -8,6 +10,19 @@ local extensions_path = utils.vscode_extensions_path()
 
 -- Use default config for now
 dapui.setup()
+overseer.setup({
+    component_aliases = {
+        default_vscode = {
+            "default",
+            "on_output_summarize",
+            "on_result_diagnostics",
+            "on_result_diagnostics_quickfix",
+        }
+    }
+})
+
+-- Support for JSON5
+dap_vscode.json_decode = require("overseer.json").decode
 
 vim.api.nvim_set_hl(0, 'DapBreakpoint', { link = 'WarningMsg', default = true })
 vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { link = 'ErrorMsg', default = true })
@@ -43,20 +58,24 @@ if vim.fn.executable("dlv") == 1 then
     }
 end
 
+local function load_launch_json()
+    local vscode_dirs = vim.fs.find(".vscode",
+        { upward = true, type = "directory", path = vim.fn.getcwd(), limit = math.huge })
+    for _, vscode_dir in ipairs(vscode_dirs) do
+        local launch_file = vscode_dir .. "/launch.json"
+        if vim.fn.filereadable(launch_file) ~= 0 then
+            dap_vscode.load_launchjs(launch_file)
+        end
+    end
+end
+
+-- Try loading on startup as well
+load_launch_json()
+
 vim.api.nvim_create_augroup("dap_dynamic_config", { clear = true })
--- TODO: Figure out how to reduce amount of tries to load launch.json while keeping it easy to use
-vim.api.nvim_create_autocmd({ "BufEnter, BufWinEnter" }, {
+vim.api.nvim_create_autocmd({ "DirChanged" }, {
     group = "dap_dynamic_config",
-    callback = function()
-        local vscode_dir = utils.find_upwards(".vscode")
-        if vscode_dir == nil then
-            return
-        end
-        if vim.fn.filereadable(vscode_dir .. "/launch.json") == 0 then
-            return
-        end
-        require("dap.ext.vscode").load_launchjs(vscode_dir .. "/launch.json")
-    end,
+    callback = load_launch_json,
 })
 
 local function set_conditional_breakpoint()
