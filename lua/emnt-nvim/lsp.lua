@@ -3,14 +3,30 @@ local M = {}
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-local null_ls = require("null-ls")
-local formatting = null_ls.builtins.formatting
-local diagnostics = null_ls.builtins.diagnostics
-
 local hydra = require("hydra")
 local cmd = require("hydra.keymap-util").cmd
 
-local schemastore = require('schemastore')
+local schemastore = require("schemastore")
+
+local prettier_d = require("efmls-configs.formatters.prettier_d")
+local eslint_d = require("efmls-configs.linters.eslint_d")
+local stylua = require("efmls-configs.formatters.stylua")
+local terraform_fmt = require("efmls-configs.formatters.terraform_fmt")
+local golangci_lint = require("efmls-configs.linters.golangci_lint")
+local shellcheck = require("efmls-configs.linters.shellcheck")
+local efm_languages = {
+    yaml = { prettier_d },
+    json = { prettier_d },
+    html = { prettier_d },
+    css = { prettier_d },
+    typescript = { eslint_d, prettier_d },
+    javascript = { eslint_d, prettier_d },
+    lua = { stylua },
+    terraform = { terraform_fmt },
+    go = { golangci_lint },
+    sh = { shellcheck },
+    bash = { shellcheck },
+}
 
 -- LSP Config
 local servers = {
@@ -53,7 +69,18 @@ local servers = {
             },
         },
     },
-    gopls = true,
+    gopls = {
+        settings = {
+            hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true
+            },
+        },
+    },
     pylsp = true,
     tsserver = true,
     nil_ls = true,
@@ -68,19 +95,17 @@ local servers = {
             },
         },
     },
-}
-
--- Linters, formatters, etc.
-local null_ls_sources = {
-    formatting.trim_whitespace,
-    formatting.trim_newlines,
-    formatting.stylua,
-    formatting.terraform_fmt,
-    formatting.yamlfmt,
-    formatting.prettierd,
-    diagnostics.shellcheck,
-    diagnostics.golangci_lint,
-    diagnostics.eslint_d,
+    efm = {
+        filetypes = vim.tbl_keys(efm_languages),
+        settings = {
+            rootMarkers = { '.git/' },
+            languages = efm_languages,
+        },
+        init_options = {
+            documentFormatting = true,
+            documentRangeFormatting = true,
+        },
+    }
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -118,27 +143,10 @@ local setup_server = function(server, config)
     lspconfig[server].setup(config)
 end
 
-local function null_ls_source_exists(source)
-    return vim.fn.executable(source._opts.command) == 1
-end
-
-local function null_ls_filter_executable()
-    local res = {}
-    for _, source in pairs(null_ls_sources) do
-        if null_ls_source_exists(source) then
-            table.insert(res, source)
-        end
-    end
-    return res
-end
-
 local function setup_servers()
     for server, config in pairs(servers) do
         setup_server(server, config)
     end
-    null_ls.setup({
-        sources = null_ls_filter_executable(),
-    })
 end
 
 -- Diagnostics Config
@@ -184,13 +192,13 @@ M.check_health = function()
         end
         ::continue::
     end
-    for _, source in pairs(null_ls_sources) do
-        if null_ls_source_exists(source) then
-            vim.health.report_ok(source._opts.command .. " installed")
-        else
-            vim.health.report_error(source._opts.command .. " not installed")
-        end
-    end
+    --for _, lang in pairs(efm_languages) do
+    --    if null_ls_source_exists(source) then
+    --        vim.health.report_ok(source._opts.command .. " installed")
+    --    else
+    --        vim.health.report_error(source._opts.command .. " not installed")
+    --    end
+    --end
 end
 
 M.setup = function()

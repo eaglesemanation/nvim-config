@@ -1,7 +1,6 @@
 local telescope = require("telescope")
 local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
-local themes = require("telescope.themes")
 local extensions = telescope.extensions
 
 local todo = require("todo-comments")
@@ -30,9 +29,6 @@ telescope.setup({
             override_file_sorter = true,
             case_mode = "smart_case",
         },
-        ["ui-select"] = {
-            themes.get_dropdown({}),
-        },
         ["file_browser"] = {
             hijack_netrw = true,
         }
@@ -40,7 +36,6 @@ telescope.setup({
 })
 
 telescope.load_extension("fzf")
-telescope.load_extension("ui-select")
 telescope.load_extension("file_browser")
 telescope.load_extension("project")
 telescope.load_extension("todo-comments")
@@ -69,9 +64,9 @@ hydra({
         { "p", function()
             extensions.project.project({ display_type = "full" })
         end, { desc = "[p]rojects" } },
-        { "d", builtin.diagnostics, {desc = "[d]iagnostics"} },
-        { "t", function ()
+        { "d", builtin.diagnostics, { desc = "[d]iagnostics" } },
+        { "t", function()
             extensions["todo-comments"].todo()
-        end, {desc = "[t]odo"}}
+        end, { desc = "[t]odo" } }
     },
 })

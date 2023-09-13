@@ -37,6 +37,8 @@ vim.opt.incsearch = true
 -- Replace window title with titlestring
 vim.opt.title = true
 vim.o.titlestring = "%<%{luaeval('require(\"emnt-nvim.utils\")').project_root_path()}%f"
+-- Keeps text stable relative to screen position instead of cursor
+vim.opt.splitkeep = "screen"
 
 -- Move between windows
 vim.keymap.set("n", "<leader>h", ":wincmd h<cr>")

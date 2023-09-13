@@ -28,7 +28,7 @@ vim.api.nvim_set_hl(0, 'DapBreakpoint', { link = 'WarningMsg', default = true })
 vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { link = 'ErrorMsg', default = true })
 vim.api.nvim_set_hl(0, 'DapStopped', { link = 'Insert', default = true })
 
-vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DapBreakpoint' })
+vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DapBreakpoint' })
 vim.fn.sign_define('DapBreakpointCondition', { text = 'ﳁ', texthl = 'DapBreakpoint' })
 vim.fn.sign_define('DapLogPoint', { text = '', texthl = 'DapBreakpoint' })
 vim.fn.sign_define('DapBreakpointRejected', { text = '', texthl = 'DapBreakpointRejected' })
@@ -78,27 +78,38 @@ vim.api.nvim_create_autocmd({ "DirChanged" }, {
     callback = load_launch_json,
 })
 
-local function set_conditional_breakpoint()
-    vim.ui.input({
-        prompt = "Breakpoint condition: ",
-    }, function(condition)
-        dap.set_breakpoint(condition)
-    end)
-end
+local hint = [[
+     ^ ^Step^ ^ ^      ^ ^     Action
+ ----^-^-^-^--^-^----  ^-^-------------------
+     ^ ^back^ ^ ^     ^_t_: toggle breakpoint
+     ^ ^ _K_^ ^        _T_: clear breakpoints
+ out _H_ ^ ^ _L_ into  _c_: continue
+     ^ ^ _J_ ^ ^       _x_: terminate
+     ^ ^over ^ ^     ^^_u_: open UI
+
+     ^ ^  _q_: exit
+]]
 
 hydra({
     name = "Debug",
     mode = "n",
     body = "<leader>d",
+    hint = hint,
     config = {
         invoke_on_body = true,
+        color = "pink",
+        hint = { type = "window" },
     },
     heads = {
-        { "c", dap.continue,               { exit = true, desc = "run / [c]ontinue" } },
-        { "b", dap.toggle_breakpoint,      { desc = "[b]reakpoint" } },
-        { "B", set_conditional_breakpoint, { desc = "conditional [B]reakpoint" } },
-        { "s", dap.step_into,              { desc = "[s]tep into" } },
-        { "n", dap.step_over,              { desc = "[n]ext" } },
-        { "u", dapui.toggle,               { exit = true, desc = "toddle [u]i" } },
+        { 'H', dap.step_out,          { desc = 'step out' } },
+        { 'J', dap.step_over,         { desc = 'step over' } },
+        { 'K', dap.step_back,         { desc = 'step back' } },
+        { 'L', dap.step_into,         { desc = 'step into' } },
+        { 't', dap.toggle_breakpoint, { desc = 'toggle breakpoint' } },
+        { 'T', dap.clear_breakpoints, { desc = 'clear breakpoints' } },
+        { 'c', dap.continue,          { desc = 'continue' } },
+        { 'x', dap.terminate,         { desc = 'terminate' } },
+        { 'u', dapui.toggle,          { exit = true, desc = 'toggle ui' } },
+        { 'q', nil,                   { exit = true, nowait = true, desc = 'exit' } },
     },
 })

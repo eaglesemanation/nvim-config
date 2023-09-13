@@ -34,13 +34,14 @@ local plugins = {
         dependencies = {
             { "nvim-lua/plenary.nvim" },
             { "nvim-telescope/telescope-fzf-native.nvim",  build = "make" },
-            { "nvim-telescope/telescope-ui-select.nvim" },
             { "nvim-telescope/telescope-file-browser.nvim" },
             { "nvim-telescope/telescope-project.nvim" },
             { "folke/todo-comments.nvim" }
         },
         config = emntMod("telescope"),
     },
+    -- vim.ui.select implementation using Telescope
+    { "stevearc/dressing.nvim",    config = true },
 
     { "lifepillar/vim-solarized8", lazy = true },
     -- Changes background color of RGB values
@@ -56,12 +57,11 @@ local plugins = {
         dependencies = {
             { "kyazdani42/nvim-web-devicons" },
         },
-        opts = {},
-    },
-    -- Keep cursor position when window below is opened
-    {
-        "luukvbaal/stabilize.nvim",
-        config = true,
+        opts = {
+            sections = {
+                lualine_x = { "overseer" },
+            },
+        },
     },
 
     ----
@@ -126,8 +126,7 @@ local plugins = {
             require("emnt-nvim.lsp").setup()
         end,
     },
-    -- Integration layer between linters/formatters and LSP
-    "jose-elias-alvarez/null-ls.nvim",
+    { "creativenull/efmls-configs-nvim", version = "v1.x.x" },
 
     -- Debugger
     {
