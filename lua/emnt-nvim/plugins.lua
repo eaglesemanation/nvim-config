@@ -33,15 +33,15 @@ local plugins = {
         name = "telescope",
         dependencies = {
             { "nvim-lua/plenary.nvim" },
-            { "nvim-telescope/telescope-fzf-native.nvim",  build = "make" },
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
             { "nvim-telescope/telescope-file-browser.nvim" },
             { "nvim-telescope/telescope-project.nvim" },
-            { "folke/todo-comments.nvim" }
+            { "folke/todo-comments.nvim" },
         },
         config = emntMod("telescope"),
     },
     -- vim.ui.select implementation using Telescope
-    { "stevearc/dressing.nvim",    config = true },
+    { "stevearc/dressing.nvim", config = true },
 
     { "lifepillar/vim-solarized8", lazy = true },
     -- Changes background color of RGB values
@@ -119,7 +119,7 @@ local plugins = {
                             lsp_inlayhints.on_attach(client, bufnr)
                         end,
                     })
-                end
+                end,
             },
         },
         config = function()
@@ -133,7 +133,7 @@ local plugins = {
         "mfussenegger/nvim-dap",
         dependencies = {
             { "rcarriga/nvim-dap-ui" },
-            { "stevearc/overseer.nvim" }
+            { "stevearc/overseer.nvim" },
         },
         config = emntMod("dap"),
     },
@@ -185,7 +185,7 @@ local plugins = {
     },
     {
         "towolf/vim-helm",
-        ft = { "helm" }
+        ft = { "helm" },
     },
 
     -- Snippets

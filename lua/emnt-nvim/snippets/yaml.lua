@@ -14,10 +14,10 @@ local rep = require("luasnip.extras").rep
 -- Insert node that defaults to value of another insert node
 local function i_rep(jump_index, node_reference)
     return d(jump_index, function(args)
-            return sn(nil, {
-                    i(1, args[1])
-                })
-        end, { node_reference })
+        return sn(nil, {
+            i(1, args[1]),
+        })
+    end, { node_reference })
 end
 
 ls.add_snippets("yaml", {
@@ -31,7 +31,7 @@ ls.add_snippets("yaml", {
                   name: <name>
             ]],
             {
-                name = i(1)
+                name = i(1),
             }
         )
     ),
@@ -74,7 +74,7 @@ ls.add_snippets("yaml", {
                 pod_app_name = rep(3),
                 pod_app_instance = rep(4),
                 container_name = i(6),
-                container_image = i(7)
+                container_image = i(7),
             }
         )
     ),
@@ -110,7 +110,7 @@ ls.add_snippets("yaml", {
                     t("ClusterIP"),
                     t("LoadBalancer"),
                     t("NodePort"),
-                    t("ExternalName")
+                    t("ExternalName"),
                 }),
                 selector_app_name = rep(3),
                 selector_app_instance = rep(4),
@@ -119,8 +119,8 @@ ls.add_snippets("yaml", {
                 port_target = i_rep(8, 7),
                 port_proto = c(9, {
                     t("TCP"),
-                    t("UDP")
-                })
+                    t("UDP"),
+                }),
             }
         )
     ),
@@ -161,10 +161,10 @@ ls.add_snippets("yaml", {
                 path_type = c(8, {
                     t("Prefix"),
                     t("Exact"),
-                    t("ImplementationSpecific")
+                    t("ImplementationSpecific"),
                 }),
                 svc_name = i(9),
-                svc_port = i(10)
+                svc_port = i(10),
             }
         )
     ),
@@ -184,8 +184,8 @@ ls.add_snippets("yaml", {
                 namespace = i(2),
                 dataType = c(3, {
                     t("stringData"),
-                    t("data")
-                })
+                    t("data"),
+                }),
             }
         )
     ),
@@ -231,14 +231,14 @@ ls.add_snippets("yaml", {
                     t("ReadWriteMany"),
                     t("ReadWriteOnce"),
                     t("ReadOnlyMany"),
-                    t("ReadWriteOncePod")
+                    t("ReadWriteOncePod"),
                 }),
                 volume_mode = c(4, {
                     t("Filesystem"),
-                    t("Block")
+                    t("Block"),
                 }),
                 storage = i(5, "1Gi"),
-                storage_class = i(6)
+                storage_class = i(6),
             }
         )
     ),
@@ -277,7 +277,7 @@ ls.add_snippets("yaml", {
                 version = i(4),
                 repo = i_rep(5, 1),
                 repo_namespace = i(6, "flux-system"),
-                values = i(7)
+                values = i(7),
             }
         )
     ),
@@ -299,7 +299,7 @@ ls.add_snippets("yaml", {
             {
                 name = i(1),
                 namespace = i(2, "flux-system"),
-                url = i(3)
+                url = i(3),
             }
         )
     ),

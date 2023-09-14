@@ -33,9 +33,9 @@ local transforms = {
             info.index = info.index + 1
 
             return c(info.index, {
-                    t(info.err_name),
-                    t(string.format('errors.Wrap(%s, "%s")', info.err_name, info.func_name)),
-                })
+                t(info.err_name),
+                t(string.format('errors.Wrap(%s, "%s")', info.err_name, info.func_name)),
+            })
         else
             return t("err")
         end
@@ -108,20 +108,20 @@ local function go_result_type(info)
     end
 
     if not function_node then
-        print "Not inside of a function"
+        print("Not inside of a function")
         return t("")
     end
 
     local query = vim.treesitter.parse_query(
-            "go",
-            [[
+        "go",
+        [[
                 [
                     (method_declaration result: (_) @id)
                     (function_declaration result: (_) @id)
                     (func_literal result: (_) @id)
                 ]
             ]]
-        )
+    )
     for _, node in query:iter_captures(function_node, 0) do
         if handlers[node:type()] then
             local result = handlers[node:type()](node, info)
@@ -136,13 +136,13 @@ end
 -- Generates default values for function return while expanding snippet
 local go_ret_vals = function(args)
     return snippet_from_nodes(
-            nil,
-            go_result_type {
-                index = 0,
-                err_name = args[1][1],
-                func_name = args[2][1],
-            }
-        )
+        nil,
+        go_result_type({
+            index = 0,
+            err_name = args[1][1],
+            func_name = args[2][1],
+        })
+    )
 end
 
 ls.add_snippets("go", {

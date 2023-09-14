@@ -8,24 +8,39 @@ local cmd = require("hydra.keymap-util").cmd
 
 local schemastore = require("schemastore")
 
+local efm_fs = require("efmls-configs.fs")
+
 local prettier_d = require("efmls-configs.formatters.prettier_d")
 local eslint_d = require("efmls-configs.linters.eslint_d")
+local stylelint = require("efmls-configs.linters.stylelint")
 local stylua = require("efmls-configs.formatters.stylua")
 local terraform_fmt = require("efmls-configs.formatters.terraform_fmt")
 local golangci_lint = require("efmls-configs.linters.golangci_lint")
 local shellcheck = require("efmls-configs.linters.shellcheck")
+local alejandra = require("efmls-configs.formatters.alejandra")
+local statix = require("efmls-configs.linters.statix")
+
+-- Avoid forcing editor config on parameters that are controlled by formatter config
+prettier_d.formatCommand = string.format(
+    "%s '${INPUT}' ${--range-start=charStart} ${--range-end=charEnd}",
+    efm_fs.executable("prettierd", efm_fs.Scope.NODE)
+)
+
 local efm_languages = {
     yaml = { prettier_d },
     json = { prettier_d },
     html = { prettier_d },
-    css = { prettier_d },
+    css = { prettier_d, stylelint },
     typescript = { eslint_d, prettier_d },
+    typescriptreact = { eslint_d, prettier_d },
     javascript = { eslint_d, prettier_d },
+    javascriptreact = { eslint_d, prettier_d },
     lua = { stylua },
     terraform = { terraform_fmt },
     go = { golangci_lint },
     sh = { shellcheck },
     bash = { shellcheck },
+    nix = { alejandra, statix },
 }
 
 -- LSP Config
@@ -33,12 +48,9 @@ local servers = {
     yamlls = {
         settings = {
             yaml = {
-                schemas = vim.list_extend(
-                    {
-                        kubernetes = { "*.k8s.yaml" },
-                    },
-                    schemastore.yaml.schemas()
-                )
+                schemas = vim.list_extend({
+                    kubernetes = { "*.k8s.yaml" },
+                }, schemastore.yaml.schemas()),
             },
         },
         on_attach = function(_, bufnr)
@@ -48,7 +60,7 @@ local servers = {
         end,
     },
     jsonls = {
-        filetypes = { "json", "jsonc", "json5" }
+        filetypes = { "json", "jsonc", "json5" },
     },
     terraformls = true,
     clangd = {
@@ -77,7 +89,7 @@ local servers = {
                 constantValues = true,
                 functionTypeParameters = true,
                 parameterNames = true,
-                rangeVariableTypes = true
+                rangeVariableTypes = true,
             },
         },
     },
@@ -98,14 +110,15 @@ local servers = {
     efm = {
         filetypes = vim.tbl_keys(efm_languages),
         settings = {
-            rootMarkers = { '.git/' },
+            rootMarkers = { ".git/" },
             languages = efm_languages,
         },
         init_options = {
             documentFormatting = true,
             documentRangeFormatting = true,
         },
-    }
+    },
+    rnix = true,
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -169,14 +182,14 @@ local hydra_conf = {
         color = "blue",
     },
     heads = {
-        { "f", vim.lsp.buf.format,                    { desc = "[f]ormat" } },
-        { "d", cmd("Telescope lsp_definitions"),      { desc = "[d]efinitions" } },
-        { "D", cmd("Telescope lsp_references"),       { desc = "references" } },
+        { "f", vim.lsp.buf.format, { desc = "[f]ormat" } },
+        { "d", cmd("Telescope lsp_definitions"), { desc = "[d]efinitions" } },
+        { "D", cmd("Telescope lsp_references"), { desc = "references" } },
         { "t", cmd("Telescope lsp_type_definitions"), { desc = "[t]ype definitions" } },
-        { "e", vim.diagnostic.open_float,             { desc = "[e]rros (diagnostic)" } },
-        { "h", vim.lsp.buf.hover,                     { desc = "[h]over popup" } },
-        { "r", vim.lsp.buf.rename,                    { desc = "[r]ename" } },
-        { "a", vim.lsp.buf.code_action,               { desc = "code [a]ction" } },
+        { "e", vim.diagnostic.open_float, { desc = "[e]rros (diagnostic)" } },
+        { "h", vim.lsp.buf.hover, { desc = "[h]over popup" } },
+        { "r", vim.lsp.buf.rename, { desc = "[r]ename" } },
+        { "a", vim.lsp.buf.code_action, { desc = "code [a]ction" } },
     },
 }
 

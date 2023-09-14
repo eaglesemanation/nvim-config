@@ -31,7 +31,7 @@ telescope.setup({
         },
         ["file_browser"] = {
             hijack_netrw = true,
-        }
+        },
     },
 })
 
@@ -50,23 +50,43 @@ hydra({
     },
     heads = {
         -- File pickers
-        { "f", function()
-            builtin.find_files({ hidden = true })
-        end, { desc = "project [f]iles" }, },
-        { "g", function()
-            builtin.live_grep({ additional_args = { "--hidden" } })
-        end, { desc = "[g]rep" }, },
-        { "b", function()
-            extensions.file_browser.file_browser({ cwd = vim.fn.expand("%:p:h") })
-        end, { desc = "[b]rowser" } },
-        { "B", builtin.buffers,    { desc = "[B]uffers" } },
+        {
+            "f",
+            function()
+                builtin.find_files({ hidden = true })
+            end,
+            { desc = "project [f]iles" },
+        },
+        {
+            "g",
+            function()
+                builtin.live_grep({ additional_args = { "--hidden" } })
+            end,
+            { desc = "[g]rep" },
+        },
+        {
+            "b",
+            function()
+                extensions.file_browser.file_browser({ cwd = vim.fn.expand("%:p:h") })
+            end,
+            { desc = "[b]rowser" },
+        },
+        { "B", builtin.buffers, { desc = "[B]uffers" } },
         { "s", builtin.treesitter, { desc = "[s]ymbols" } },
-        { "p", function()
-            extensions.project.project({ display_type = "full" })
-        end, { desc = "[p]rojects" } },
+        {
+            "p",
+            function()
+                extensions.project.project({ display_type = "full" })
+            end,
+            { desc = "[p]rojects" },
+        },
         { "d", builtin.diagnostics, { desc = "[d]iagnostics" } },
-        { "t", function()
-            extensions["todo-comments"].todo()
-        end, { desc = "[t]odo" } }
+        {
+            "t",
+            function()
+                extensions["todo-comments"].todo()
+            end,
+            { desc = "[t]odo" },
+        },
     },
 })

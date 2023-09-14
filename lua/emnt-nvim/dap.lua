@@ -17,22 +17,22 @@ overseer.setup({
             "on_output_summarize",
             "on_result_diagnostics",
             "on_result_diagnostics_quickfix",
-        }
-    }
+        },
+    },
 })
 
 -- Support for JSON5
 dap_vscode.json_decode = require("overseer.json").decode
 
-vim.api.nvim_set_hl(0, 'DapBreakpoint', { link = 'WarningMsg', default = true })
-vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { link = 'ErrorMsg', default = true })
-vim.api.nvim_set_hl(0, 'DapStopped', { link = 'Insert', default = true })
+vim.api.nvim_set_hl(0, "DapBreakpoint", { link = "WarningMsg", default = true })
+vim.api.nvim_set_hl(0, "DapBreakpointRejected", { link = "ErrorMsg", default = true })
+vim.api.nvim_set_hl(0, "DapStopped", { link = "Insert", default = true })
 
-vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DapBreakpoint' })
-vim.fn.sign_define('DapBreakpointCondition', { text = 'ﳁ', texthl = 'DapBreakpoint' })
-vim.fn.sign_define('DapLogPoint', { text = '', texthl = 'DapBreakpoint' })
-vim.fn.sign_define('DapBreakpointRejected', { text = '', texthl = 'DapBreakpointRejected' })
-vim.fn.sign_define('DapStopped', { text = '', texthl = 'DapStopped' })
+vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapBreakpointCondition", { text = "ﳁ", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapLogPoint", { text = "", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "DapBreakpointRejected" })
+vim.fn.sign_define("DapStopped", { text = "", texthl = "DapStopped" })
 
 if extensions_path ~= nil then
     local codelldb_path = extensions_path .. "/vadimcn.vscode-lldb/adapter/codelldb"
@@ -43,7 +43,7 @@ if extensions_path ~= nil then
             executable = {
                 command = codelldb_path,
                 args = { "--port", "${port}" },
-            }
+            },
         }
     end
 end
@@ -59,8 +59,8 @@ if vim.fn.executable("dlv") == 1 then
 end
 
 local function load_launch_json()
-    local vscode_dirs = vim.fs.find(".vscode",
-        { upward = true, type = "directory", path = vim.fn.getcwd(), limit = math.huge })
+    local vscode_dirs =
+        vim.fs.find(".vscode", { upward = true, type = "directory", path = vim.fn.getcwd(), limit = math.huge })
     for _, vscode_dir in ipairs(vscode_dirs) do
         local launch_file = vscode_dir .. "/launch.json"
         if vim.fn.filereadable(launch_file) ~= 0 then
@@ -101,15 +101,15 @@ hydra({
         hint = { type = "window" },
     },
     heads = {
-        { 'H', dap.step_out,          { desc = 'step out' } },
-        { 'J', dap.step_over,         { desc = 'step over' } },
-        { 'K', dap.step_back,         { desc = 'step back' } },
-        { 'L', dap.step_into,         { desc = 'step into' } },
-        { 't', dap.toggle_breakpoint, { desc = 'toggle breakpoint' } },
-        { 'T', dap.clear_breakpoints, { desc = 'clear breakpoints' } },
-        { 'c', dap.continue,          { desc = 'continue' } },
-        { 'x', dap.terminate,         { desc = 'terminate' } },
-        { 'u', dapui.toggle,          { exit = true, desc = 'toggle ui' } },
-        { 'q', nil,                   { exit = true, nowait = true, desc = 'exit' } },
+        { "H", dap.step_out, { desc = "step out" } },
+        { "J", dap.step_over, { desc = "step over" } },
+        { "K", dap.step_back, { desc = "step back" } },
+        { "L", dap.step_into, { desc = "step into" } },
+        { "t", dap.toggle_breakpoint, { desc = "toggle breakpoint" } },
+        { "T", dap.clear_breakpoints, { desc = "clear breakpoints" } },
+        { "c", dap.continue, { desc = "continue" } },
+        { "x", dap.terminate, { desc = "terminate" } },
+        { "u", dapui.toggle, { exit = true, desc = "toggle ui" } },
+        { "q", nil, { exit = true, nowait = true, desc = "exit" } },
     },
 })
