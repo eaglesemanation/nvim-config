@@ -8,8 +8,47 @@ local utils = require("emnt-nvim.utils")
 
 local extensions_path = utils.vscode_extensions_path()
 
--- Use default config for now
-dapui.setup()
+dapui.setup({
+    layouts = {
+        {
+            elements = {
+                {
+                    id = "scopes",
+                    size = 0.50,
+                },
+                {
+                    id = "breakpoints",
+                    size = 0.15,
+                },
+                {
+                    id = "stacks",
+                    size = 0.15,
+                },
+                {
+                    id = "watches",
+                    size = 0.20,
+                },
+            },
+            position = "left",
+            size = 50,
+        },
+        {
+            elements = {
+                {
+                    id = "repl",
+                    size = 0.70,
+                },
+                {
+                    id = "console",
+                    size = 0.30,
+                },
+            },
+            position = "bottom",
+            size = 15,
+        },
+    },
+})
+
 overseer.setup({
     component_aliases = {
         default_vscode = {
@@ -19,6 +58,7 @@ overseer.setup({
             "on_result_diagnostics_quickfix",
         },
     },
+    strategy = { "jobstart", use_terminal = false },
 })
 
 -- Support for JSON5
@@ -101,15 +141,15 @@ hydra({
         hint = { type = "window" },
     },
     heads = {
-        { "H", dap.step_out, { desc = "step out" } },
-        { "J", dap.step_over, { desc = "step over" } },
-        { "K", dap.step_back, { desc = "step back" } },
-        { "L", dap.step_into, { desc = "step into" } },
+        { "H", dap.step_out,          { desc = "step out" } },
+        { "J", dap.step_over,         { desc = "step over" } },
+        { "K", dap.step_back,         { desc = "step back" } },
+        { "L", dap.step_into,         { desc = "step into" } },
         { "t", dap.toggle_breakpoint, { desc = "toggle breakpoint" } },
         { "T", dap.clear_breakpoints, { desc = "clear breakpoints" } },
-        { "c", dap.continue, { desc = "continue" } },
-        { "x", dap.terminate, { desc = "terminate" } },
-        { "u", dapui.toggle, { exit = true, desc = "toggle ui" } },
-        { "q", nil, { exit = true, nowait = true, desc = "exit" } },
+        { "c", dap.continue,          { desc = "continue" } },
+        { "x", dap.terminate,         { desc = "terminate" } },
+        { "u", dapui.toggle,          { exit = true, desc = "toggle ui" } },
+        { "q", nil,                   { exit = true, nowait = true, desc = "exit" } },
     },
 })

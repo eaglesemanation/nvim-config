@@ -26,15 +26,19 @@ prettier_d.formatCommand = string.format(
     efm_fs.executable("prettierd", efm_fs.Scope.NODE)
 )
 
+golangci_lint.rootMarkers = { ".golangci.yml", ".golangci.yaml", ".golangci.toml", ".golangci.json", "go.mod" }
+golangci_lint.lintWorkspace = true
+golangci_lint.lintFormats = { "%f:%l:%c %m" }
+
 local efm_languages = {
     yaml = { prettier_d },
     json = { prettier_d },
     html = { prettier_d },
     css = { prettier_d, stylelint },
-    typescript = { eslint_d, prettier_d },
-    typescriptreact = { eslint_d, prettier_d },
-    javascript = { eslint_d, prettier_d },
-    javascriptreact = { eslint_d, prettier_d },
+    typescript = { prettier_d, eslint_d },
+    typescriptreact = { prettier_d, eslint_d },
+    javascript = { prettier_d, eslint_d },
+    javascriptreact = { prettier_d, eslint_d },
     lua = { stylua },
     terraform = { terraform_fmt },
     go = { golangci_lint },
@@ -182,14 +186,14 @@ local hydra_conf = {
         color = "blue",
     },
     heads = {
-        { "f", vim.lsp.buf.format, { desc = "[f]ormat" } },
-        { "d", cmd("Telescope lsp_definitions"), { desc = "[d]efinitions" } },
-        { "D", cmd("Telescope lsp_references"), { desc = "references" } },
+        { "f", vim.lsp.buf.format,                    { desc = "[f]ormat" } },
+        { "d", cmd("Telescope lsp_definitions"),      { desc = "[d]efinitions" } },
+        { "D", cmd("Telescope lsp_references"),       { desc = "references" } },
         { "t", cmd("Telescope lsp_type_definitions"), { desc = "[t]ype definitions" } },
-        { "e", vim.diagnostic.open_float, { desc = "[e]rros (diagnostic)" } },
-        { "h", vim.lsp.buf.hover, { desc = "[h]over popup" } },
-        { "r", vim.lsp.buf.rename, { desc = "[r]ename" } },
-        { "a", vim.lsp.buf.code_action, { desc = "code [a]ction" } },
+        { "e", vim.diagnostic.open_float,             { desc = "[e]rros (diagnostic)" } },
+        { "h", vim.lsp.buf.hover,                     { desc = "[h]over popup" } },
+        { "r", vim.lsp.buf.rename,                    { desc = "[r]ename" } },
+        { "a", vim.lsp.buf.code_action,               { desc = "code [a]ction" } },
     },
 }
 
