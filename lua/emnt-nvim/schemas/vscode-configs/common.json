@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://jsonschema.emnt.dev/vscode-configs/common.json",
+  "type": "object",
+  "required": ["name", "type", "request"],
+  "properties": {
+    "name": { "type": "string", "description": "Launch configuration name" },
+    "type": { "type": "string", "description": "Type of configuration, determines execution backend" },
+    "request": { "type": "string", "enum": ["attach", "launch"], "description": "Method of starting debugger" },
+    "presentation": {
+      "type": "object",
+      "description": "Tweak appearance of config in debug dropdown",
+      "properties": { "order": { "type": "number" }, "group": { "type": "string" }, "hidden": { "type": "boolean" } }
+    },
+    "preLaunchTask": {
+      "type": "string",
+      "description": "Label of a task from tasks.json to be executed before starting"
+    },
+    "postDebugTask": { "type": "string", "description": "Label of a task from tasks.json to be executed after ending" }
+  }
+}

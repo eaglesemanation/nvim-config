@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://jsonschema.emnt.dev/vscode-launch.json",
+  "type": "object",
+  "title": "JSON schema for VSCode launch configuration file",
+  "unevaluatedProperties": false,
+  "required": ["version", "configurations"],
+  "properties": {
+    "version": {
+      "description": "The version of the launch configuration file format",
+      "type": "string",
+      "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\d+)$"
+    },
+    "configurations": {
+      "type": "array",
+      "description": "An array of VSCode launch configurations",
+      "items": { "oneOf": [{ "$ref": "vscode-configs/codelldb.json#" }] }
+    },
+    "inputs": { "type": "array", "items": { "$ref": "vscode-inputs.json#" } }
+  }
+}

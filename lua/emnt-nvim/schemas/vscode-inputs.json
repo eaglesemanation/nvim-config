@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://jsonschema.emnt.dev/vscode-inputs.json",
+  "type": "object",
+  "description": "Variable definition which will be populated with user input",
+  "required": ["id", "type"],
+  "unevaluatedProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "Variable name" },
+    "type": {
+      "type": "string",
+      "description": "Type of UI used for populating variable",
+      "enum": ["promptString", "pickString", "command"]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "anyOf": [{ "const": "promptString" }, { "const": "pickString" }] } } },
+      "then": {
+        "required": ["description"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Shown in the quick input, provides context for the input"
+          },
+          "default": {
+            "type": "string",
+            "description": "Default value that will be used if the user doesn't enter something else"
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "promptString" } } },
+      "then": {
+        "properties": {
+          "password": {
+            "type": "boolean",
+            "description": "Set to true to input with a password prompt that will not show the typed value"
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "pickString" } } },
+      "then": {
+        "required": ["options"],
+        "properties": {
+          "options": {
+            "type": "array",
+            "description": "An array of options for the user to pick from",
+            "items": {
+              "type": ["object", "string"],
+              "properties": { "label": { "type": "string" }, "value": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "command" } } },
+      "then": {
+        "required": ["command"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "VSCode command that will be ran and it's output used as variable value"
+          },
+          "args": { "type": ["string", "object"], "additionalProperties": { "type": "string" } }
+        }
+      }
+    }
+  ]
+}

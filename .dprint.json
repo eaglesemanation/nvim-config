@@ -1,0 +1,2 @@
+{ "json": { "preferSingleLine": true }, "plugins": ["https://plugins.dprint.dev/json-0.19.1.wasm"] }
+

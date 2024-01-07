@@ -11,6 +11,7 @@ local schemastore = require("schemastore")
 local efm_fs = require("efmls-configs.fs")
 
 local prettier_d = require("efmls-configs.formatters.prettier_d")
+local dprint_d = require("efmls-configs.formatters.dprint")
 local eslint_d = require("efmls-configs.linters.eslint_d")
 local stylelint = require("efmls-configs.linters.stylelint")
 local stylua = require("efmls-configs.formatters.stylua")
@@ -32,7 +33,7 @@ golangci_lint.lintFormats = { "%f:%l:%c %m" }
 
 local efm_languages = {
     yaml = { prettier_d },
-    json = { prettier_d },
+    json = { dprint_d },
     html = { prettier_d },
     css = { prettier_d, stylelint },
     typescript = { prettier_d, eslint_d },
@@ -46,6 +47,8 @@ local efm_languages = {
     bash = { shellcheck },
     nix = { alejandra, statix },
 }
+
+local schemas_path = vim.fn.stdpath("config") .. "/lua/emnt-nvim/schemas/"
 
 -- LSP Config
 local servers = {
@@ -65,6 +68,21 @@ local servers = {
     },
     jsonls = {
         filetypes = { "json", "jsonc", "json5" },
+        settings = {
+            json = {
+                schemas = schemastore.json.schemas({
+                    extra = {
+                        {
+                            description = "VSCode launch.json schema",
+                            fileMatch = ".vscode/launch.json",
+                            name = "vscode-launch.json",
+                            url = schemas_path .. "vscode-launch.json",
+                        },
+                    },
+                }),
+                validate = { enable = true },
+            },
+        },
     },
     terraformls = true,
     clangd = {
@@ -123,17 +141,27 @@ local servers = {
         },
     },
     rnix = true,
+    omnisharp = {
+        cmd = { "OmniSharp" },
+    },
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 
 local server_exists = function(server, config)
-    local server_name = lspconfig[server].document_config.default_config.cmd[1]
+    local server_name = nil
+    local default_cmd = lspconfig[server].document_config.default_config.cmd
+    if default_cmd ~= nil then
+        server_name = default_cmd[1]
+    end
     if type(config) == "table" and config.cmd ~= nil and #config.cmd > 0 then
         server_name = config.cmd[1]
     end
 
+    if server_name == nil then
+        return false
+    end
     return vim.fn.executable(server_name) == 1
 end
 

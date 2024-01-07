@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://jsonschema.emnt.dev/vscode-configs/codelldb.json",
+  "unevaluatedProperties": false,
+  "allOf": [
+    { "$ref": "common.json#" },
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "lldb" },
+        "request": { "type": "string", "enum": ["attach", "launch", "custom"] },
+        "initCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed on debugger startup"
+        },
+        "targetCreateCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed to create debug target"
+        },
+        "preRunCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed before launching/attaching process"
+        },
+        "processCreateCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed to create/attach process"
+        },
+        "postRunCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed after launching/attaching process"
+        },
+        "exitCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "LLDB commands executed before stopping debugger"
+        },
+        "expressions": {
+          "type": "string",
+          "enum": ["simple", "python", "native"],
+          "default": "simple",
+          "description": "Engine for evaluating debug console expressions"
+        },
+        "sourceMap": {
+          "type": "object",
+          "description": "Maps source from path given as a key to a path stored in value"
+        },
+        "relativePathBase": {
+          "type": "string",
+          "default": "${workspaceFolder}",
+          "description": "Path used for resolution of relative source paths"
+        },
+        "breakpointMode": {
+          "type": "string",
+          "enum": ["path", "file"],
+          "default": "path",
+          "description": "Specify if breakpoints should be set by source file path or just file name"
+        },
+        "sourceLanguages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of languages used in the program, enables language-specific features"
+        },
+        "reverseDebugging": {
+          "type": "boolean",
+          "description": "Enables debugging of recording with ability to step backwards"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "request": { "const": "launch" } } },
+          "then": {
+            "anyOf": [{ "required": ["program"] }, { "required": ["cargo"] }],
+            "properties": {
+              "program": { "type": "string", "description": "Path of the executable file" },
+              "cargo": {
+                "type": "object",
+                "description": "Determines what program to run using Cargo",
+                "properties": {
+                  "args": {
+                    "type": ["string", "array"],
+                    "description": "Cargo command line parameters",
+                    "items": { "type": "string" }
+                  },
+                  "env": { "type": "object", "description": "Cargo extra environment variables" },
+                  "problemMatcher": { "type": "string" },
+                  "filter": {
+                    "type": "object",
+                    "description": "Filter applied to cargo compilation artifacts",
+                    "properties": {
+                      "name": { "type": "string", "description": "Artifact name" },
+                      "kind": {
+                        "type": "string",
+                        "description": "Kind of artifact",
+                        "enum": ["lib", "rlib", "staticlib", "dylib", "cstaticlib", "bin", "example", "bench", "test"]
+                      }
+                    }
+                  }
+                }
+              },
+              "args": {
+                "type": ["string", "array"],
+                "items": { "type": "string" },
+                "description": "Command line parameters for the program"
+              },
+              "cwd": { "type": "string", "description": "Working directory" },
+              "env": { "type": "object", "description": "Extra environment variables" },
+              "envFile": {
+                "type": "string",
+                "description": "Path to file with extra environment variables, matching vars override \"env\" parameter"
+              },
+              "stdio": {
+                "type": ["string", "array", "null"],
+                "items": { "type": ["string", "null"] },
+                "description": "Configure redirects for stdin, stdout and stderr, in that order. null redirects to default terminal. Giving less than 3 values padds array with last given value. Giving more than 3 values opens additional file descriptors."
+              },
+              "terminal": {
+                "type": "string",
+                "enum": ["console", "integrated", "external"],
+                "default": "integrated",
+                "description": "Destination for stdio streams"
+              },
+              "stopOnEntry": { "type": "boolean", "description": "Stop debuggee after launching" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "request": { "const": "attach" } } },
+          "then": {
+            "required": ["program"],
+            "properties": {
+              "program": { "type": "string", "description": "Path of the executable file" },
+              "pid": {
+                "type": "number",
+                "description": "Proccess id to attach to. If omitted - will try finding running instance of program"
+              },
+              "stopOnEntry": { "type": "boolean", "description": "Stop debuggee after launching" },
+              "waitFor": { "type": "boolean", "description": "Wait for process to launnch" }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

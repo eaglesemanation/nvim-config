@@ -77,7 +77,7 @@ vim.fn.sign_define("DapStopped", { text = "", texthl = "DapStopped" })
 if extensions_path ~= nil then
     local codelldb_path = extensions_path .. "/vadimcn.vscode-lldb/adapter/codelldb"
     if vim.fn.filereadable(codelldb_path) then
-        dap.adapters.codelldb = {
+        dap.adapters.lldb = {
             type = "server",
             port = "${port}",
             executable = {
@@ -104,7 +104,7 @@ local function load_launch_json()
     for _, vscode_dir in ipairs(vscode_dirs) do
         local launch_file = vscode_dir .. "/launch.json"
         if vim.fn.filereadable(launch_file) ~= 0 then
-            dap_vscode.load_launchjs(launch_file)
+            dap_vscode.load_launchjs(launch_file, { lldb = { "c", "cpp", "rust" } })
         end
     end
 end
