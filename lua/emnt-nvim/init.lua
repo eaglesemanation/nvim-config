@@ -57,10 +57,6 @@ vim.keymap.set("n", "<leader>|", ":vsplit<cr>")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
-function P(val)
-    print(vim.inspect(val))
-end
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({

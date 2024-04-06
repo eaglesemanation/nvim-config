@@ -2,55 +2,15 @@ local M = {}
 
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
+local efm_config = require("emnt-nvim.efm-config")
 
 local hydra = require("hydra")
 local cmd = require("hydra.keymap-util").cmd
 
 local schemastore = require("schemastore")
+local schemas_path = vim.fn.stdpath("config") .. "/json-schemas/"
 
-local efm_fs = require("efmls-configs.fs")
-
-local prettier_d = require("efmls-configs.formatters.prettier_d")
-local dprint_d = require("efmls-configs.formatters.dprint")
-local eslint_d = require("efmls-configs.linters.eslint_d")
-local stylelint = require("efmls-configs.linters.stylelint")
-local stylua = require("efmls-configs.formatters.stylua")
-local terraform_fmt = require("efmls-configs.formatters.terraform_fmt")
-local golangci_lint = require("efmls-configs.linters.golangci_lint")
-local shellcheck = require("efmls-configs.linters.shellcheck")
-local alejandra = require("efmls-configs.formatters.alejandra")
-local statix = require("efmls-configs.linters.statix")
-
--- Avoid forcing editor config on parameters that are controlled by formatter config
-prettier_d.formatCommand = string.format(
-    "%s '${INPUT}' ${--range-start=charStart} ${--range-end=charEnd}",
-    efm_fs.executable("prettierd", efm_fs.Scope.NODE)
-)
-
-golangci_lint.rootMarkers = { ".golangci.yml", ".golangci.yaml", ".golangci.toml", ".golangci.json", "go.mod" }
-golangci_lint.lintWorkspace = true
-golangci_lint.lintFormats = { "%f:%l:%c %m" }
-
-local efm_languages = {
-    yaml = { prettier_d },
-    json = { dprint_d },
-    html = { prettier_d },
-    css = { prettier_d, stylelint },
-    typescript = { prettier_d, eslint_d },
-    typescriptreact = { prettier_d, eslint_d },
-    javascript = { prettier_d, eslint_d },
-    javascriptreact = { prettier_d, eslint_d },
-    lua = { stylua },
-    terraform = { terraform_fmt },
-    go = { golangci_lint },
-    sh = { shellcheck },
-    bash = { shellcheck },
-    nix = { alejandra, statix },
-}
-
-local schemas_path = vim.fn.stdpath("config") .. "/lua/emnt-nvim/schemas/"
-
--- LSP Config
+-- List of servers that will be enabled, either a boolean or a table with custom config
 local servers = {
     yamlls = {
         settings = {
@@ -130,17 +90,16 @@ local servers = {
         },
     },
     efm = {
-        filetypes = vim.tbl_keys(efm_languages),
+        filetypes = vim.tbl_keys(efm_config.languages),
         settings = {
             rootMarkers = { ".git/" },
-            languages = efm_languages,
+            languages = efm_config.languages,
         },
         init_options = {
             documentFormatting = true,
             documentRangeFormatting = true,
         },
     },
-    rnix = true,
     omnisharp = {
         cmd = { "OmniSharp" },
     },
@@ -237,18 +196,16 @@ M.check_health = function()
         end
         ::continue::
     end
-    --for _, lang in pairs(efm_languages) do
-    --    if null_ls_source_exists(source) then
-    --        vim.health.report_ok(source._opts.command .. " installed")
-    --    else
-    --        vim.health.report_error(source._opts.command .. " not installed")
-    --    end
-    --end
 end
 
 M.setup = function()
     -- Auto format on save
-    vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
+    vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+        pattern = "*",
+        callback = function()
+            vim.lsp.buf.format()
+        end,
+    })
     setup_servers()
     setup_diagnostics()
     hydra(hydra_conf)

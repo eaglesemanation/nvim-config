@@ -33,7 +33,7 @@ local plugins = {
         name = "telescope",
         dependencies = {
             { "nvim-lua/plenary.nvim" },
-            { "nvim-telescope/telescope-fzf-native.nvim",  build = "make" },
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
             { "nvim-telescope/telescope-file-browser.nvim" },
             { "nvim-telescope/telescope-project.nvim" },
             { "folke/todo-comments.nvim" },
@@ -41,7 +41,7 @@ local plugins = {
         config = emntMod("telescope"),
     },
     -- vim.ui.select implementation using Telescope
-    { "stevearc/dressing.nvim",    config = true },
+    { "stevearc/dressing.nvim", config = true },
 
     { "lifepillar/vim-solarized8", lazy = true },
     -- Changes background color of RGB values
@@ -97,7 +97,7 @@ local plugins = {
             -- JSON and YAML schemas for autocompletion
             { "b0o/schemastore.nvim" },
             -- Support for LSP to insert virtual text, such as types for Rust
-            -- TODO: Remove this when hint support lands in nvim
+            -- TODO: Remove this when hint support lands in nvim (seems like in v0.10)
             {
                 "lvimuser/lsp-inlayhints.nvim",
                 config = function()
@@ -147,9 +147,11 @@ local plugins = {
     {
         "nvim-neotest/neotest",
         dependencies = {
+            { "nvim-neotest/nvim-nio" },
             { "nvim-lua/plenary.nvim" },
             { "nvim-neotest/neotest-go" },
             { "rouge8/neotest-rust" },
+            { "marilari88/neotest-vitest" },
         },
         config = emntMod("neotest"),
     },
@@ -167,6 +169,7 @@ local plugins = {
             require("nvim-treesitter.install").update({ with_sync = true })
         end,
         config = function()
+            ---@diagnostic disable-next-line:missing-fields
             require("nvim-treesitter.configs").setup({
                 ensure_installed = "all",
                 auto_install = true,
@@ -187,7 +190,11 @@ local plugins = {
     -- Snippets
     {
         "L3MON4D3/LuaSnip",
-        config = emntMod("snippets"),
+        version = "v2.*",
+        build = "make install_jsregexp",
+        config = function()
+            require("emnt-nvim.luasnip").setup()
+        end,
     },
     -- Autocompletion
     {

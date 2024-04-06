@@ -1,26 +1,6 @@
-require("luasnip.session.snippet_collection").clear_snippets("yaml")
+local i_rep = require("emnt-nvim.luasnip").i_rep
 
-local ls = require("luasnip")
-
-local s = ls.s
-local t = ls.t
-local c = ls.c
-local i = ls.insert_node
-local d = ls.dynamic_node
-local sn = ls.sn
-local fmta = require("luasnip.extras.fmt").fmta
-local rep = require("luasnip.extras").rep
-
--- Insert node that defaults to value of another insert node
-local function i_rep(jump_index, node_reference)
-    return d(jump_index, function(args)
-        return sn(nil, {
-            i(1, args[1]),
-        })
-    end, { node_reference })
-end
-
-ls.add_snippets("yaml", {
+return {
     s(
         "ns",
         fmta(
@@ -303,4 +283,4 @@ ls.add_snippets("yaml", {
             }
         )
     ),
-})
+}

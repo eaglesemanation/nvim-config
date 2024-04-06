@@ -1,17 +1,3 @@
-require("luasnip.session.snippet_collection").clear_snippets("go")
-
-local ls = require("luasnip")
-
-local snippet_from_nodes = ls.sn
-
-local s = ls.s
-local i = ls.insert_node
-local t = ls.text_node
-local d = ls.dynamic_node
-local c = ls.choice_node
-local fmta = require("luasnip.extras.fmt").fmta
-local rep = require("luasnip.extras").rep
-
 local ts_locals = require("nvim-treesitter.locals")
 local ts_utils = require("nvim-treesitter.ts_utils")
 
@@ -97,6 +83,9 @@ local function_node_types = {
 
 local function go_result_type(info)
     local cursor_node = ts_utils.get_node_at_cursor()
+    if cursor_node == nil then
+        return t("")
+    end
     local scope = ts_locals.get_scope_tree(cursor_node, 0)
 
     local function_node
@@ -108,20 +97,18 @@ local function go_result_type(info)
     end
 
     if not function_node then
-        print("Not inside of a function")
-        return t("")
+        error("Not inside of a function")
     end
 
-    local query = vim.treesitter.parse_query(
-        "go",
-        [[
-                [
-                    (method_declaration result: (_) @id)
-                    (function_declaration result: (_) @id)
-                    (func_literal result: (_) @id)
-                ]
-            ]]
-    )
+    local query_text = [[
+        [
+            (method_declaration result: (_) @id)
+            (function_declaration result: (_) @id)
+            (func_literal result: (_) @id)
+        ]
+    ]]
+    local query = vim.treesitter.query.parse("go", query_text)
+    ---@diagnostic disable-next-line:missing-parameter
     for _, node in query:iter_captures(function_node, 0) do
         if handlers[node:type()] then
             local result = handlers[node:type()](node, info)
@@ -135,7 +122,7 @@ end
 
 -- Generates default values for function return while expanding snippet
 local go_ret_vals = function(args)
-    return snippet_from_nodes(
+    return sn(
         nil,
         go_result_type({
             index = 0,
@@ -145,12 +132,17 @@ local go_ret_vals = function(args)
     )
 end
 
-ls.add_snippets("go", {
+return {
     s(
-        "efi",
+        {
+            trig = "efi",
+            name = "Handle error function",
+            desc =
+            "Call a function that returns value and error tuple. In case error is not nil - return it from current function",
+        },
         fmta(
             [[
-                <val>, <err> := <f>(<args>)
+                <val>, <err> := <f>
                 if <err_same> != nil {
                     return<result>
                 }
@@ -160,11 +152,10 @@ ls.add_snippets("go", {
                 val = i(1),
                 err = i(2, "err"),
                 f = i(3),
-                args = i(4),
                 err_same = rep(2),
-                result = d(5, go_ret_vals, { 2, 3 }),
+                result = d(4, go_ret_vals, { 2, 3 }),
                 finish = i(0),
             }
         )
     ),
-})
+}

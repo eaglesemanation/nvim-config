@@ -23,6 +23,11 @@ neotest.setup({
         require("neotest-rust")({
             dap_adapter = "codelldb",
         }),
+        require("neotest-vitest")({
+            filter_dir = function(name, rel_path, root)
+                return name ~= "node_modules"
+            end,
+        }),
     },
 })
 
