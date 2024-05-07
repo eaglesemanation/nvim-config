@@ -59,6 +59,69 @@ return {
         )
     ),
     s(
+        "sts",
+        fmta(
+            [[
+                apiVersion: apps/v1
+                kind: StatefulSet
+                metadata:
+                  name: <name>
+                  namespace: <namespace>
+                  labels:
+                    app.kubernetes.io/name: <sts_app_name>
+                    app.kubernetes.io/instance: <sts_app_instance>
+                spec:
+                  replicas: <replicas>
+                  serviceName: <service_name>
+                  selector:
+                    matchLabels:
+                      app.kubernetes.io/name: <selector_app_name>
+                      app.kubernetes.io/instance: <selector_app_instance>
+                  volumeClaimTemplates:
+                    - metadata:
+                        name: <volume_name>
+                      spec:
+                        accessModes: [ "<volume_access_mode>" ]
+                        storageClassName: "<volume_storage_class>"
+                        resources:
+                          requests:
+                            storage: <volume_storage_request>
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/name: <pod_app_name>
+                        app.kubernetes.io/instance: <pod_app_instance>
+                    spec:
+                      containers:
+                        - name: <container_name>
+                          image: <container_image>
+            ]],
+            {
+                name = i(1),
+                namespace = i_rep(2, 1),
+                sts_app_name = i_rep(3, 1),
+                sts_app_instance = i_rep(4, 3),
+                replicas = i(5),
+                service_name = rep(1),
+                selector_app_name = rep(3),
+                selector_app_instance = rep(4),
+                volume_name = rep(1),
+                volume_access_mode = c(6, {
+                    t("ReadWriteOnce"),
+                    t("ReadWriteMany"),
+                    t("ReadOnlyMany"),
+                    t("ReadWriteOncePod"),
+                }),
+                volume_storage_class = i(7, "freenas-api-iscsi-csi"),
+                volume_storage_request = i(8, "1Gi"),
+                pod_app_name = rep(3),
+                pod_app_instance = rep(4),
+                container_name = i(9),
+                container_image = i(10),
+            }
+        )
+    ),
+    s(
         "svc",
         fmta(
             [[
@@ -208,8 +271,8 @@ return {
                 name = i(1),
                 namespace = i(2),
                 access_mode = c(3, {
-                    t("ReadWriteMany"),
                     t("ReadWriteOnce"),
+                    t("ReadWriteMany"),
                     t("ReadOnlyMany"),
                     t("ReadWriteOncePod"),
                 }),
@@ -218,7 +281,7 @@ return {
                     t("Block"),
                 }),
                 storage = i(5, "1Gi"),
-                storage_class = i(6),
+                storage_class = i(6, "freenas-api-iscsi-csi"),
             }
         )
     ),

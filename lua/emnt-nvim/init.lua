@@ -57,6 +57,10 @@ vim.keymap.set("n", "<leader>|", ":vsplit<cr>")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
+-- Map system clipboard buffer to leader
+vim.keymap.set("n", "<leader>y", '"+y')
+vim.keymap.set("n", "<leader>p", '"+p')
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
