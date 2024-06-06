@@ -20,11 +20,6 @@ local servers = {
                 }, schemastore.yaml.schemas()),
             },
         },
-        on_attach = function(_, bufnr)
-            if vim.bo[bufnr].buftype ~= "" or vim.bo[bufnr].filetype == "helm" then
-                vim.diagnostic.disable()
-            end
-        end,
     },
     jsonls = {
         filetypes = { "json", "jsonc", "json5" },
@@ -67,13 +62,15 @@ local servers = {
     },
     gopls = {
         settings = {
-            hints = {
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                constantValues = true,
-                functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true,
+            gopls = {
+                hints = {
+                    assignVariableTypes = true,
+                    compositeLiteralFields = true,
+                    constantValues = true,
+                    functionTypeParameters = true,
+                    parameterNames = true,
+                    rangeVariableTypes = true,
+                },
             },
         },
     },
@@ -139,11 +136,17 @@ local setup_server = function(server, config)
         config = {}
     end
 
+    -- Enable inlay hints on server attachment
     config = vim.tbl_deep_extend("force", {
         capabilities = capabilities,
         flags = {
             debounce_text_changes = 50,
         },
+        on_attach = function(client, bufnr)
+            if client.server_capabilities.inlayHintProvider then
+                vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+            end
+        end,
     }, config)
 
     lspconfig[server].setup(config)
@@ -205,6 +208,7 @@ M.setup = function()
     -- Auto format on save
     vim.api.nvim_create_autocmd({ "BufWritePre" }, {
         pattern = "*",
+        group = vim.api.nvim_create_augroup("UserAutoformat", {}),
         callback = function()
             vim.lsp.buf.format()
         end,
