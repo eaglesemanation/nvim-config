@@ -33,7 +33,7 @@ local plugins = {
         name = "telescope",
         dependencies = {
             { "nvim-lua/plenary.nvim" },
-            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+            { "nvim-telescope/telescope-fzf-native.nvim",  build = "make" },
             { "nvim-telescope/telescope-file-browser.nvim" },
             { "nvim-telescope/telescope-project.nvim" },
             { "folke/todo-comments.nvim" },
@@ -41,9 +41,17 @@ local plugins = {
         config = emntMod("telescope"),
     },
     -- vim.ui.select implementation using Telescope
-    { "stevearc/dressing.nvim", config = true },
+    { "stevearc/dressing.nvim",          config = true },
 
-    { "lifepillar/vim-solarized8", lazy = true },
+    {
+        "maxmx03/solarized.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            vim.o.background = "dark"
+            vim.cmd.colorscheme("solarized")
+        end,
+    },
     -- Changes background color of RGB values
     {
         "norcalli/nvim-colorizer.lua",

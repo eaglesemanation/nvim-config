@@ -76,5 +76,3 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.loader.enable()
 require("emnt-nvim.plugins")
-
-vim.cmd.colorscheme("solarized8_flat")
